@@ -34,7 +34,16 @@ var myside = 'w'
 var amIspectator = false
 var connectionReady;
 while (typeof connectionReady == "undefined") {
-}
+}function playSoundop () {
+	const ding = new Audio('http://images.chesscomfiles.com/chess-themes/sounds/_MP3_/default/move-self.mp3');
+	ding.play();}
+function playSoundcg () {
+	const ding = new Audio('http://images.chesscomfiles.com/chess-themes/sounds/_MP3_/default/notify.mp3');
+	ding.play();}
+function playSoundtk () {
+const ding = new Audio('http://images.chesscomfiles.com/chess-themes/sounds/_MP3_/default/capture.mp3');
+ding.play();}
+
 function removeGreySquares () {
   $('#myBoard .square-55d63').css('background', '')
 }
@@ -67,8 +76,10 @@ function onDrop (source, target) {
   var move = game.move({
     from: source,
     to: target,
-    promotion: 'q' // NOTE: always promote to a queen for example simplicity
+    promotion: 'q', // NOTE: always promote to a queen for example simplicity
+    
   })
+
 
   // illegal move
   if (move === null) return 'snapback'
@@ -78,6 +89,7 @@ function onDrop (source, target) {
   }
   //leave this part for promotion button group
   updateStatus()
+  playSoundop()
 }
 
 function onMouseoverSquare (square, piece) {
@@ -132,10 +144,12 @@ function updateStatus () {
   // game still on
   else {
     status = ' Đến lượt '+ moveColor;
+    
 
     // check?
     if (game.in_check()) {
       status += ', ' + moveColor + ' đang bị chiếu'
+      playSoundcg()
     }
   }
 
