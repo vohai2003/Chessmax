@@ -15,7 +15,7 @@ var $fen = $('#fen')
 var $pgn = $('#pgn')
 var whiteSquareGrey = '#bec8d1'
 var blackSquareGrey = '#373b3e'
-import * as Colyseus from "../libary/colyseus/colyseus.js"
+//var Colyseus = require("../libary/colyseus/colyseus.js")
 var connectionUrl = "ws://"+ location.host + ":8000"
 var client = new Colyseus.Client(connectionUrl)
 var default_room = client.join("public_hall")
@@ -28,13 +28,27 @@ default_room.onMessage.add(function(message){
   amIspectator = message["spectator"]
   myside = message["myside"]
   connectionReady = true
+  game = new Chess()
+  }
+  if (message["tag"]== "move") {
+    if (message.side == game.turn) 
+    {
+      game.move({
+        from:message["from"],
+        to: message["to"],
+        promotion: message["promotion"]
+      })
+    }
+  }
+  if (message["tag"] == "ended") {
+    amIspectator = true
   }
 })
 var myside = 'w'
-var amIspectator = false
+var amIspectator = true
 var connectionReady;
-while (typeof connectionReady == "undefined") {
-}function playSoundop () {
+while (typeof connectionReady == "undefined") {}
+function playSoundop () {
 	const ding = new Audio('http://images.chesscomfiles.com/chess-themes/sounds/_MP3_/default/move-self.mp3');
 	ding.play();}
 function playSoundcg () {
@@ -70,13 +84,23 @@ function onDragStart (source, piece, position, orientation) {
   }
 }
 
-function onDrop (source, target) {
+function onDrop (source, target, piece, newPos, oldPos, orientation) {
   removeGreySquares()
+  var promotion
+  //leave this part for promotion button group
+  if (piece="wP" && target.search("8") !==-1) //the moved piece is a white pawn, ready to be promoted 
+  {
+
+  }
+  if (piece="bP" && target.search("1")!==-1) //the moved piece is a black pawn, ready to be promoted 
+  {
+
+  }
   // see if the move is legal
   var move = game.move({
     from: source,
     to: target,
-    promotion: 'q', // NOTE: always promote to a queen for example simplicity
+    promotion: promotion, // NOTE: always promote to a queen for example simplicity
     
   })
 
@@ -84,10 +108,16 @@ function onDrop (source, target) {
   // illegal move
   if (move === null) return 'snapback'
   //leave this part for piece update
-  if (game.turn === myside && !amIspectator) {
-
+  if (game.turn === myside && !amIspectator) //Only sending signals when the turn is ours and we're not spectators.
+  {
+    default_room.send({
+      tag: "move",
+      side: myside,
+      from: source,
+      to: target,
+      promotion: promotion
+    })
   }
-  //leave this part for promotion button group
   updateStatus()
   playSoundop()
 }
