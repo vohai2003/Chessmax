@@ -15,9 +15,9 @@ var $fen = $('#fen')
 var $pgn = $('#pgn')
 var whiteSquareGrey = '#bec8d1'
 var blackSquareGrey = '#373b3e'
-//var Colyseus = require("../libary/colyseus/colyseus.js")
+import * as Colyseus from "../libary/colyseus/colyseus.js"
 var connectionUrl = "ws://"+ location.host + ":8000"
-var client = new Colyseus.Client(connectionUrl)
+let client = new Colyseus.Client(connectionUrl)
 var default_room = client.join("public_hall")
 var username = $('#username')
 default_room.onJoin.add(function(){
