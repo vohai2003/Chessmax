@@ -15,22 +15,24 @@ var $fen = $('#fen')
 var $pgn = $('#pgn')
 var whiteSquareGrey = '#bec8d1'
 var blackSquareGrey = '#373b3e'
-import * as Colyseus from "../libary/colyseus/colyseus.js"
-var connectionUrl = "ws://"+ location.host + ":8000"
-let client = new Colyseus.Client(connectionUrl)
-var default_room = client.join("public_hall")
-var username = $('#username')
-default_room.onJoin.add(function(){
-  default_room.send({username: username})
-})
-default_room.onMessage.add(function(message){
-  if (message["tag"] == "welcome") {
-  amIspectator = message["spectator"]
-  myside = message["myside"]
-  connectionReady = true
-  game = new Chess()
-  }
-  if (message["tag"]== "move") {
+var connectionUrl = "ws://"+ location.hostname + ":7800"
+console.log(connectionUrl)
+var client = new Colyseus.Client(connectionUrl)
+var default_room
+var room_promise = client.joinOrCreate("public_hall").then(room=>{
+  default_room = room
+  default_room.onMessage("welcome",(message)=>{
+    tempamIspectator = message["spectator"]
+    myside = message["myside"]
+    console.log(tempamIspectator)
+    console.log(myside)
+    connectionReady = true
+    game = new Chess()})
+  default_room.onMessage("started",(message)=>{
+    amIspectator = tempamIspectator
+    console.log("Started")
+  })
+  default_room.onMessage("move",(message)=>{
     if (message.side == game.turn) 
     {
       game.move({
@@ -39,15 +41,20 @@ default_room.onMessage.add(function(message){
         promotion: message["promotion"]
       })
     }
-  }
-  if (message["tag"] == "ended") {
+  })
+  default_room.onMessage("ended",(message)=>{
     amIspectator = true
-  }
+  })
+}).catch((err)=>{
+  console.log(err.code)
+  console.log(err.message)
 })
+var username = $('#username')
+var tempamIspectator
+//default_room.send("join",{username: username})
 var myside = 'w'
 var amIspectator = true
 var connectionReady;
-while (typeof connectionReady == "undefined") {}
 function playSoundop () {
 	const ding = new Audio('http://images.chesscomfiles.com/chess-themes/sounds/_MP3_/default/move-self.mp3');
 	ding.play();}
@@ -110,8 +117,7 @@ function onDrop (source, target, piece, newPos, oldPos, orientation) {
   //leave this part for piece update
   if (game.turn === myside && !amIspectator) //Only sending signals when the turn is ours and we're not spectators.
   {
-    default_room.send({
-      tag: "move",
+    default_room.send("move",{
       side: myside,
       from: source,
       to: target,
