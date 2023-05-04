@@ -19,28 +19,41 @@ var connectionUrl = "ws://"+ location.hostname + ":7800"
 console.log(connectionUrl)
 var client = new Colyseus.Client(connectionUrl)
 var default_room
+var amIspectator = true
 var room_promise = client.joinOrCreate("public_hall").then(room=>{
   default_room = room
   default_room.onMessage("welcome",(message)=>{
-    tempamIspectator = message["spectator"]
+    amIspectator = message["spectator"]
     myside = message["myside"]
-    console.log(tempamIspectator)
+    console.log(amIspectator)
     console.log(myside)
     connectionReady = true
-    game = new Chess()})
+    game = new Chess()
+    if (myside == "b") {
+      board.orientation("black")
+    }
+    else {
+      board.orientation("white")
+    }
+  })
   default_room.onMessage("started",(message)=>{
-    amIspectator = tempamIspectator
     console.log("Started")
   })
   default_room.onMessage("move",(message)=>{
-    if (message.side == game.turn) 
+    console.log("Received move!")
+    if (message.side == game.turn()) 
     {
+      console.log("From ",message["from"])
+      console.log("To ",message["to"])
       game.move({
         from:message["from"],
         to: message["to"],
         promotion: message["promotion"]
       })
+      playSoundop()
     }
+    updateStatus()
+    board.position(game.fen())
   })
   default_room.onMessage("ended",(message)=>{
     amIspectator = true
@@ -53,7 +66,6 @@ var username = $('#username')
 var tempamIspectator
 //default_room.send("join",{username: username})
 var myside = 'w'
-var amIspectator = true
 var connectionReady;
 function playSoundop () {
 	const ding = new Audio('http://images.chesscomfiles.com/chess-themes/sounds/_MP3_/default/move-self.mp3');
@@ -82,18 +94,28 @@ function greySquare (square) {
 
 function onDragStart (source, piece, position, orientation) {
   // do not pick up pieces if the game is over
-  if (game.game_over()) return false
+  if (game.game_over()) {
+    console.log("Game is already over")
+    return false
+  }
   // do not pick the pieces if the player is spectator
-  if (amIspectator) return false
+  if (amIspectator===true) {
+    console.log("You are spectator, you can't edit board")
+    return false
+  }
   // only pick up pieces for the side to move
-  if (game.turn !== myside || piece.search(myside)===-1) {
+  if (game.turn() != myside || piece.search(myside)===-1) {
+    if (piece.search(myside)===-1) {console.log("This is not your piece!")} else {console.log("Not your turn!")}
+    console.log(piece)
+    console.log(myside)
+    console.log(game.turn())
     return false
   }
 }
 
 function onDrop (source, target, piece, newPos, oldPos, orientation) {
   removeGreySquares()
-  var promotion
+  var promotion="q"
   //leave this part for promotion button group
   if (piece="wP" && target.search("8") !==-1) //the moved piece is a white pawn, ready to be promoted 
   {
@@ -115,15 +137,12 @@ function onDrop (source, target, piece, newPos, oldPos, orientation) {
   // illegal move
   if (move === null) return 'snapback'
   //leave this part for piece update
-  if (game.turn === myside && !amIspectator) //Only sending signals when the turn is ours and we're not spectators.
-  {
-    default_room.send("move",{
-      side: myside,
-      from: source,
-      to: target,
-      promotion: promotion
-    })
-  }
+  default_room.send("move",{
+    side: myside,
+    from: source,
+    to: target,
+    promotion: promotion
+  })
   updateStatus()
   playSoundop()
 }
