@@ -190,12 +190,12 @@ function updateStatus () {
 
   // checkmate?
   if (game.in_checkmate()) {
-    status = 'Game over, ' + moveColor + ' is in checkmate.'
+    status = 'Ván đấu kết thúc, ' + moveColor + ' bị chiếu hết'
   }
 
   // draw?
   else if (game.in_draw()) {
-    status = 'Game over, drawn position'
+    status = 'Ván đấu kết thúc, hòa'
   }
 
   // game still on
