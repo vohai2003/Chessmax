@@ -28,7 +28,7 @@ var room_promise = client.joinOrCreate("public_hall").then(room=>{
     console.log(amIspectator)
     console.log(myside)
     connectionReady = true
-    game = new Chess()
+    game = new Chess(message["fen"])
     if (myside == "b") {
       board.orientation("black")
     }
