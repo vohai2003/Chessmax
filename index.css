@@ -13,6 +13,7 @@ section{
     background: url('bg3.jpg')no-repeat;
     background-position: center;
     background-size: cover;
+    filter: blur(40px);
 }
 .form-box{
     position: relative;
