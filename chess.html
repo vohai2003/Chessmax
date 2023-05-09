@@ -11,6 +11,15 @@
 
     <!-- <script defer src="C:\Users\tnguy\node_modules\chess.js\dist"></script> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.2/chess.js" integrity="sha384-s3XgLpvmHyscVpijnseAmye819Ee3yaGa8NxstkJVyA6nuDFjt59u1QvuEl/mecz" crossorigin="anonymous"></script>
+    <style>
+    .btn-group button{
+    background-color: #cccccc;
+    font-size: 1.8em;
+    }
+    .btn-group button:hover{
+        background-color: grey;
+    }
+    </style>
   </head>
   <body>
     <!-- <div id="board" style="width: 400px"></div>
@@ -18,13 +27,28 @@
     <button id="clearBtn">Clear Board</button> -->
 
     
-    <div id="myBoard" style="width: 40%"></div>
+    <div id="myBoard" class="mainBoard" style="width: 40%; margin: auto"></div>
     <label>Trạng thái bàn cờ:</label>
     <div id="status"></div>
     <label>FEN: </label><div id="fen"></div>
     <label>PGN:</label>
     <div id="pgn"></div>
-
-    
   </body>
+  <div class="btn-group" style="display:none; z-index:100; position: absolute;" id="promotion">
+    <button onclick="$('#promotion').val('q')">&#x2655;</button>
+    <button onclick="$('#promotion').val('r')">&#x2656;</button>
+    <button onclick="$('#promotion').val('b')">&#x2657;</button>
+    <button onclick="$('#promotion').val('n')">&#x2658;</button>
+  </div>
+  <script>
+  var observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutationRecord) {
+        if (mutationRecord.attributeName == "style") {
+          $('#promotion').val('');
+        }
+    });    
+  });
+  var target = document.getElementById('promotion');
+  observer.observe(target, { attributes : true, attributeFilter : ['style'] });
+  </script>
 </html>
