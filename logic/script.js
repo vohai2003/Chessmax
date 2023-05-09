@@ -9,7 +9,7 @@
 // $('#clearBtn').on('click', board.clear)
 var mousePosX;
 var mousePosY;
-
+var started = false;
 window.addEventListener('mousemove', (event) => {
   mousePosX = event.clientX
   mousePosY = event.clientY
@@ -22,6 +22,7 @@ var $fen = $('#fen')
 var $pgn = $('#pgn')
 var whiteSquareGrey = '#bec8d1'
 var blackSquareGrey = '#373b3e'
+var redSquare = '#ff4040'
 var connectionUrl = "ws://"+ location.hostname + ":7800"
 console.log(connectionUrl)
 var client = new Colyseus.Client(connectionUrl)
@@ -49,6 +50,7 @@ var room_promise = client.joinOrCreate("public_hall").then(room=>{
   default_room.onMessage("started",(message)=>{
     console.log("Started")
     playSoundcg()
+    started = true
     amIspectator = tempamIspectator
   })
   default_room.onMessage("move",(message)=>{
@@ -98,7 +100,7 @@ function removeGreySquares () {
 
 function greySquare (square) {
   var $square = $('#myBoard .square-' + square)
-
+  
   var background = whiteSquareGrey
   if ($square.hasClass('black-3c85d')) {
     background = blackSquareGrey
@@ -209,7 +211,10 @@ function onSnapEnd () {
   board.position(game.fen())
 }
 
-function updateStatus () {
+async function updateStatus () {
+  while (document.readyState !== 'complete') {
+    await sleep(300)
+  }
   var status = ''
 
   var moveColor = 'Trắng'
@@ -229,6 +234,17 @@ function updateStatus () {
 
   // game still on
   else {
+    if (game.pgn() == '') {
+      if (tempamIspectator !== true) {
+        status = 'Đang chờ đối thủ'
+        if (amIspectator === false) {
+          status = 'Trận đấu bắt đầu!'
+        }
+      }
+      else {
+        status = 'Bạn là khán giả'
+      }
+    }
     status = ' Đến lượt '+ moveColor;
     
 
@@ -238,11 +254,31 @@ function updateStatus () {
       playSoundcg()
     }
   }
-
   $status.html(status)
   $fen.html(game.fen())
   $pgn.html(game.pgn())
-}
+  if (game!==undefined) {
+  for (var square = 0; square < 64; square++)
+  {
+    var position = game.SQUARES[square]
+    var piece = game.get(position)
+    if (game.in_checkmate() && game.turn() == myside && tempamIspectator !==true) {
+      $(`.square-${position}`).addClass("highlight-check")
+      continue
+    }
+    if (piece === null) {
+      $(`.square-${position}`).removeClass("highlight-check")
+      continue
+    }
+    if (piece["type"] == 'k' && piece["color"]==game.turn() && game.in_check()) {
+      $(`.square-${position}`).addClass("highlight-check")
+      }
+    else {
+      $(`.square-${position}`).removeClass("highlight-check")
+    }
+    }
+    }
+  }
 
 var config = {
   draggable: true,
@@ -254,5 +290,4 @@ var config = {
   onMouseoverSquare: onMouseoverSquare
 }
 board = Chessboard('myBoard', config)
-
 updateStatus()
