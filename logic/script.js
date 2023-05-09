@@ -7,6 +7,13 @@
 
 // $('#startBtn').on('click', board.start)
 // $('#clearBtn').on('click', board.clear)
+var mousePosX;
+var mousePosY;
+
+window.addEventListener('mousemove', (event) => {
+  mousePosX = event.clientX
+  mousePosY = event.clientY
+});
 
 var board = null
 var game = new Chess()
@@ -20,10 +27,11 @@ console.log(connectionUrl)
 var client = new Colyseus.Client(connectionUrl)
 var default_room
 var amIspectator = true
+var tempamIspectator
 var room_promise = client.joinOrCreate("public_hall").then(room=>{
   default_room = room
   default_room.onMessage("welcome",(message)=>{
-    amIspectator = message["spectator"]
+    tempamIspectator = message["spectator"]
     myside = message["myside"]
     console.log(amIspectator)
     console.log(myside)
@@ -40,6 +48,8 @@ var room_promise = client.joinOrCreate("public_hall").then(room=>{
   })
   default_room.onMessage("started",(message)=>{
     console.log("Started")
+    playSoundcg()
+    amIspectator = tempamIspectator
   })
   default_room.onMessage("move",(message)=>{
     console.log("Received move!")
@@ -70,14 +80,17 @@ var tempamIspectator
 var myside = 'w'
 var connectionReady;
 function playSoundop () {
-	const ding = new Audio('http://images.chesscomfiles.com/chess-themes/sounds/_MP3_/default/move-self.mp3');
-	ding.play();}
+	const ding = new Audio('../audio/move-self.mp3');
+	while(ding.play()===undefined){};
+}
 function playSoundcg () {
-	const ding = new Audio('http://images.chesscomfiles.com/chess-themes/sounds/_MP3_/default/notify.mp3');
-	ding.play();}
+	const ding = new Audio('../audio/notify.mp3');
+	while(ding.play()===undefined){};
+}
 function playSoundtk () {
-const ding = new Audio('http://images.chesscomfiles.com/chess-themes/sounds/_MP3_/default/capture.mp3');
-ding.play();}
+  const ding = new Audio('../audio/capture.mp3');
+  while(ding.play()===undefined){};
+}
 
 function removeGreySquares () {
   $('#myBoard .square-55d63').css('background', '')
@@ -93,7 +106,9 @@ function greySquare (square) {
 
   $square.css('background', background)
 }
-
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 function onDragStart (source, piece, position, orientation) {
   // do not pick up pieces if the game is over
   if (game.game_over()) {
@@ -115,17 +130,30 @@ function onDragStart (source, piece, position, orientation) {
   }
 }
 
-function onDrop (source, target, piece, newPos, oldPos, orientation) {
+async function onDrop (source, target, piece, newPos, oldPos, orientation) {
   removeGreySquares()
   var promotion="q"
+  var promotionElement
   //leave this part for promotion button group
-  if (piece="wP" && target.search("8") !==-1) //the moved piece is a white pawn, ready to be promoted 
+  if (piece=="wP" && target.search("8") !=-1) //the moved piece is a white pawn, ready to be promoted 
   {
-
+    $("#promotion").css("left", `${mousePosX}px`);
+    $("#promotion").css("top", `${mousePosY}px`);
+    $("#promotion").show()
+    while ($('#promotion').val() == '') {
+      await sleep(100)
+    }
+    promotion = $('#promotion').val()
+    $("#promotion").hide()
   }
-  if (piece="bP" && target.search("1")!==-1) //the moved piece is a black pawn, ready to be promoted 
+  if (piece=="bP" && target.search("1")!=-1) //the moved piece is a black pawn, ready to be promoted 
   {
-
+    $("#promotion").show()
+    while ($('#promotion').val() == '') {
+      await sleep(100)
+    }
+    promotion = $('#promotion').val()
+    $("#promotion").hide()
   }
   // see if the move is legal
   var move = game.move({
@@ -150,6 +178,7 @@ function onDrop (source, target, piece, newPos, oldPos, orientation) {
 }
 
 function onMouseoverSquare (square, piece) {
+  if (amIspectator===true || game.turn() != myside || game.game_over()) return false
   // get list of possible moves for this square
   var moves = game.moves({
     square: square,
