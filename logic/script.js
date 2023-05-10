@@ -16,6 +16,7 @@ window.addEventListener('mousemove', (event) => {
 });
 
 var board = null
+var numPiece = 32
 var game = new Chess()
 var $status = $('#status')
 var $fen = $('#fen')
@@ -46,6 +47,7 @@ var room_promise = client.joinOrCreate("public_hall").then(room=>{
     else {
       board.orientation("white")
     }
+    numPiece = 64 - (game.ascii().match(/\./g) || []).length
   })
   default_room.onMessage("started",(message)=>{
     console.log("Started")
@@ -64,7 +66,14 @@ var room_promise = client.joinOrCreate("public_hall").then(room=>{
         to: message["to"],
         promotion: message["promotion"]
       })
+      var currentPieceOnBoard = 64 - (game.ascii().match(/\./g) || []).length
+      if (numPiece != currentPieceOnBoard) { //number of piece on-board change after move -> capture occured.
+        playSoundtk()
+        numPiece = currentPieceOnBoard
+      }
+      else {
       playSoundop()
+      }
     }
     updateStatus()
     board.position(game.fen())
@@ -87,6 +96,10 @@ function playSoundop () {
 }
 function playSoundcg () {
 	const ding = new Audio('../audio/notify.mp3');
+	while(ding.play()===undefined){};
+}
+function playSoundck () {
+	const ding = new Audio('../audio/check.mp3');
 	while(ding.play()===undefined){};
 }
 function playSoundtk () {
@@ -150,6 +163,8 @@ async function onDrop (source, target, piece, newPos, oldPos, orientation) {
   }
   if (piece=="bP" && target.search("1")!=-1) //the moved piece is a black pawn, ready to be promoted 
   {
+    $("#promotion").css("left", `${mousePosX}px`);
+    $("#promotion").css("top", `${mousePosY}px`);
     $("#promotion").show()
     while ($('#promotion').val() == '') {
       await sleep(100)
@@ -176,7 +191,14 @@ async function onDrop (source, target, piece, newPos, oldPos, orientation) {
     promotion: promotion
   })
   updateStatus()
+  var currentPieceOnBoard = 64 - (game.ascii().match(/\./g) || []).length
+  if (numPiece != currentPieceOnBoard) { //number of piece on-board change after move -> capture occured.
+    playSoundtk()
+    numPiece = currentPieceOnBoard
+  }
+  else {
   playSoundop()
+  }
 }
 
 function onMouseoverSquare (square, piece) {
@@ -251,21 +273,20 @@ async function updateStatus () {
     // check?
     if (game.in_check()) {
       status += ', ' + moveColor + ' đang bị chiếu'
-      playSoundcg()
+      playSoundck()
     }
   }
   $status.html(status)
   $fen.html(game.fen())
   $pgn.html(game.pgn())
+  if (game.in_checkmate() && game.turn() == myside && tempamIspectator !==true) {
+    $("[class^='board-']").addClass("highlight-checkmate")
+  }
   if (game!==undefined) {
   for (var square = 0; square < 64; square++)
   {
     var position = game.SQUARES[square]
     var piece = game.get(position)
-    if (game.in_checkmate() && game.turn() == myside && tempamIspectator !==true) {
-      $(`.square-${position}`).addClass("highlight-check")
-      continue
-    }
     if (piece === null) {
       $(`.square-${position}`).removeClass("highlight-check")
       continue
