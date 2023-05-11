@@ -59,7 +59,12 @@ label{
   background-color: #8B4513;
   color: #8B4513;
 }
-
+.highlight-check {
+  box-shadow: inset 0 0 3px 3px red !important
+}
+.highlight-checkmate {
+  box-shadow: inset 0 0 100px 100px red !important
+}
 .highlight1-32417, .highlight2-9c5d2 {
   box-shadow: inset 0 0 3px 3px yellow;
 }
