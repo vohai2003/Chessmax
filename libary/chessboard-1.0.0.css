@@ -1,5 +1,5 @@
 body {
-  background: rgb(24, 22, 22);
+  background: #312e2b !important;
   /* background: url('bg3.jpg')no-repeat;
     background-position: center;
     background-size: cover;; */
@@ -32,9 +32,10 @@ label{
 }
 
 .board-b72b1 {
-  border: 2px solid #404040;
+  border: 2px solid #000000;
   box-sizing: content-box;
-  float:left;
+  
+  
 }
 
 .square-55d63 {
@@ -63,7 +64,9 @@ label{
   box-shadow: inset 0 0 3px 3px red !important
 }
 .highlight-checkmate {
-  box-shadow: inset 0 0 100px 100px red !important
+  background-color: #FF4500 !important;
+  color:#FF4500 !important;
+  /* box-shadow: inset 0 0 100px 100px red !important */
 }
 .highlight1-32417, .highlight2-9c5d2 {
   box-shadow: inset 0 0 3px 3px yellow;
