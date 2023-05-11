@@ -89,12 +89,27 @@ label{
   left: 2px;
 }
 form {
-  background-color: #ec0f21;
   width: 500px;
-  height: 200px;
+  height: 750px;
   position: relative;
   float:right;
   overflow: auto;
-  
+  margin: 10px 300px 0px 0px;
   box-shadow: 0px 0px 8px 1px rgba(0,0,0,.75);
+  background: transparent;
+  /* background-color: #000000; */
+  border: 2px solid rgba(255,255,255,0.5) !important ;
+  border-radius: 20px;
+  backdrop-filter: blur(15px);
+}
+textarea {
+  width: 100%;
+  padding: 15px;
+  margin: 406px 0 0px 0 !important;
+  border: none;
+  background: #fffdfd;
+  resize: none;
+  min-height: 200px;
+  border: 2px solid rgba(255,255,255,0.5) !important ;
+  border-radius: 20px;
 }
