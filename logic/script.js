@@ -279,9 +279,6 @@ async function updateStatus () {
   $status.html(status)
   $fen.html(game.fen())
   $pgn.html(game.pgn())
-  if (game.in_checkmate() && game.turn() == myside && tempamIspectator !==true) {
-    $("[class^='board-']").addClass("highlight-checkmate")
-  }
   if (game!==undefined) {
   for (var square = 0; square < 64; square++)
   {
@@ -293,6 +290,9 @@ async function updateStatus () {
     }
     if (piece["type"] == 'k' && piece["color"]==game.turn() && game.in_check()) {
       $(`.square-${position}`).addClass("highlight-check")
+      if (game.in_checkmate()) {
+        $(`.square-${position}`).addClass("highlight-checkmate")
+      }
       }
     else {
       $(`.square-${position}`).removeClass("highlight-check")
