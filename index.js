@@ -15,6 +15,8 @@ class ChessRoom extends colyseus.Room {
     game = 0;
     onCreate(options) {
         this.game = new chess.Chess()
+        this.roomId = options.id
+        console.log(options)
         console.log("New room created")
         this.onMessage("move",(client,message)=>{
             this.broadcast("move",message);
@@ -25,6 +27,9 @@ class ChessRoom extends colyseus.Room {
                 to: message["to"],
                 promotion: message["promotion"]
             })
+        })
+        this.onMessage("ended",(client,message)=>{
+            this.broadcast("ended",message)
         })
     }
     onJoin(client,options,auth) {
@@ -62,8 +67,13 @@ class ChessRoom extends colyseus.Room {
         }
 
     }
-    onLeave(client,consented){
-
+    async onLeave(client,consented){
+        try {
+        await this.allowReconnection(client, 30);
+        }
+        catch(e) {
+            this.broadcast("ended",{reason: "disconnection"})
+        }
     }
     onDispose() {
 
