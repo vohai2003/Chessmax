@@ -32,12 +32,17 @@
     <button id="clearBtn">Clear Board</button> -->
 
     
-    <div id="myBoard" class="mainBoard" style="width: 40%; margin: auto";float:left;></div>
+    <div id="myBoard" class="mainBoard" style="width: 40%; margin: 10px 160px;float:left;"></div>
   <form>
     <label>Trạng thái bàn cờ: </label>  <div id="status"></div>
     <label>FEN: </label><div id="fen"></div>
     <label>PGN:</label>
     <div id="pgn"></div>
+
+    <div class="form-value">
+    <div class="inputbox">
+      <textarea placeholder="Type message.." name="msg" required></textarea>
+    </div></div>
   </form>
   </body>
   <div class="btn-group" style="display:none; z-index:100; position: absolute;" id="promotion">
