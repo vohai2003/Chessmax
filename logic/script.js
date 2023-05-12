@@ -30,7 +30,21 @@ var client = new Colyseus.Client(connectionUrl)
 var default_room
 var amIspectator = true
 var tempamIspectator
-var room_promise = client.joinOrCreate("public_hall").then(room=>{
+var roomId = getUrlParameter("id") || "1000000000" //normal room id is hexa from 000000000 to fffffffff
+var rooms = await client.getAvailableRooms()
+var idExists = false
+rooms.forEach(element => {
+  if (element.roomId == roomId) {
+    idExists = true
+  }
+})
+if (idExists) {
+  var room_promise = client.joinById(roomId)
+}
+else {
+  var room_promise = client.create("public_hall",{id: roomId})
+}
+room_promise.then(room=>{
   default_room = room
   default_room.onMessage("welcome",(message)=>{
     tempamIspectator = message["spectator"]
@@ -247,11 +261,13 @@ async function updateStatus () {
   // checkmate?
   if (game.in_checkmate()) {
     status = 'Ván đấu kết thúc, ' + moveColor + ' bị chiếu hết'
+    client.send("ended",{reason: "checkmate"})
   }
 
   // draw?
   else if (game.in_draw()) {
     status = 'Ván đấu kết thúc, hòa'
+    client.send("ended",{reason: "draw"})
   }
 
   // game still on
