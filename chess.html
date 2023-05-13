@@ -31,17 +31,18 @@
     <button id="startBtn">Start Position</button>
     <button id="clearBtn">Clear Board</button> -->
 
-    
-    <div id="myBoard" class="mainBoard" style="width: 40%; margin: 10px 160px;float:left;"></div>
-  <form>
+    <div id="username" style="display: none;"></div>
+    <div id="myBoard" class="mainBoard" style="width: 40%; margin: 0.5% 2.5%;float:left;"></div>
+  <form class="status-n-chatlog">
     <label>Trạng thái bàn cờ: </label>  <div id="status"></div>
     <label>FEN: </label><div id="fen"></div>
     <label>PGN:</label>
     <div id="pgn"></div>
 
     <div class="form-value">
+    <div class="chatlog" id="chatlog"></div>
     <div class="inputbox">
-      <textarea placeholder="Type message.." name="msg" required></textarea>
+      <textarea placeholder="Type message.." name="msg" id="chat-input"></textarea>
     </div></div>
   </form>
   </body>

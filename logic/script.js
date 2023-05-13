@@ -95,11 +95,15 @@ room_promise.then(room=>{
   default_room.onMessage("ended",(message)=>{
     amIspectator = true
   })
+  default_room.onMessage("chat",(message=>{
+    console.log(message)
+    $("#chatlog").append(`<div>${message["username"]}: ${message["msg"]}</div>`)
+  }))
 }).catch((err)=>{
   console.log(err.code)
   console.log(err.message)
 })
-var username = $('#username')
+var username = sessionStorage.getItem('username') || "Guest"
 var tempamIspectator
 //default_room.send("join",{username: username})
 var myside = 'w'
@@ -316,7 +320,24 @@ async function updateStatus () {
     }
     }
   }
-
+$("#chat-input").keydown((event)=>{
+  if (event.keyCode === 13) {
+    var msg = $("#chat-input").val()
+    if (msg != '' && !msg.includes("\n")) {
+    console.log(msg)
+    $("#chatlog").append(`<div>${username}: ${msg}</div>`)
+    default_room.send("chat",{username: username,msg: msg})
+    }
+    else {
+      $("#chat-input").val('')
+    }
+  }
+})
+$("#chat-input").keyup((event)=>{
+  if (event.keyCode === 13) {
+    $("#chat-input").val('')
+  }
+})
 var config = {
   draggable: true,
   position: 'start',
