@@ -5,23 +5,23 @@ body {
     background-size: cover;; */
 }
 label{
-  position: relitive;
+  position: relative;
   font-size: 1.2em;
   color: white;
   text-align: center;
 }
 #status{
-  position: relitive;
+  position: relative;
   font-size: 1em;
   color: white;
 }
 #fen{
-  position: relitive;
+  position: relative;
   font-size: 1em;
   color: white;
 }
 #pgn{
-  position: relitive;
+  position: relative;
   font-size: 1em;
   color: white;
 }
@@ -121,5 +121,9 @@ textarea {
   color: white
 }
 .status-n-chatlog {
-  height: auto
+  height: auto !important; 
+  width: 45% !important;
+  float: left;
+  margin: 0px 0px 0px 0px !important;
 }
+
