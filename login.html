@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="index.css">
     <script defer src="./logic/user.js"></script>
-    <title>Document</title>
+    <script src="./libary/colyseus/colyseus.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <title>ChessMax</title>
 </head>
 <body>
     <section>
@@ -16,13 +18,13 @@
                 <h2>Nhập tên</h2>
                 <div class="inputbox">
                     <ion-icon name="caret-forward-circle-outline"></ion-icon>
-                    <input type="text" required>
-                    <label for="">Tên</label>
+                    <input type="text" pattern="^[A-Za-z0-9_]{5,20}$" title="Tên phải là chữ hoặc số, 5-20 kí tự." id="username_create" required>
+                    <label for="">Bạn muốn được gọi là</label>
                 </div>
                 
-                <button id="btnLogin" class="btn">Play</button>
+                <button id="btnLogin" class="btn" onclick="createHandler()">Tạo phòng</button>
                 <div class="register">
-                    <p>Muốn join room ? <a href="#" onclick="moForm()">Nhập id phòng</a></p>
+                    <p>Muốn join room ? <a href="#" onclick="moForm()">Nhập ID phòng</a></p>
                 </div>
 
 
@@ -33,11 +35,11 @@
                 <form action="" class="form-container">
                   <h1>Nhập để vào room</h1>
                   <div class="inputboxs">
-                    <input placeholder="Hãy nhập Tên" type="text" required>
-                    <input placeholder="Hãy nhập mã phòng" type="text" required>
+                    <input placeholder="Hãy nhập tên" type="text" id="username_join" pattern="^[A-Za-z0-9_]{5,20}$" title="Tên phải gồm chữ hoặc/và số, 5-20 kí tự." required>
+                    <input placeholder="Hãy nhập mã phòng" type="text" id="roomID" pattern="^[a-f0-9]{9}$" title="ID phòng gồm 9 kí tự chữ hoặc/và số" required>
                 </div>
-                  <button type="submit" class="btn">Vào phòng</button>
-                  <button type="button" class="btn nut-dong-chatbox" onclick="dongForm()">Đóng</button>
+                  <button type="button" class="btn" id="enter_room" onclick="joinHandler()">Vào phòng</button>
+                  <button type="button" class="btn nut-dong-chatbox" onclick="dongForm()" id="close">Đóng</button>
                 </form>
               </div>
         </div>
