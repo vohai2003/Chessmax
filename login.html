@@ -17,11 +17,29 @@
                 <div class="inputbox">
                     <ion-icon name="caret-forward-circle-outline"></ion-icon>
                     <input type="text" required>
-                    <label for="">Name</label>
+                    <label for="">Tên</label>
                 </div>
                 
                 <button id="btnLogin" class="btn">Play</button>
+                <div class="register">
+                    <p>Muốn join room ? <a href="#" onclick="moForm()">Nhập id phòng</a></p>
+                </div>
+
+
+
+
             </form>
+            <div class="room" id="myForm">
+                <form action="" class="form-container">
+                  <h1>Nhập để vào room</h1>
+                  <div class="inputboxs">
+                    <input placeholder="Hãy nhập Tên" type="text" required>
+                    <input placeholder="Hãy nhập mã phòng" type="text" required>
+                </div>
+                  <button type="submit" class="btn">Vào phòng</button>
+                  <button type="button" class="btn nut-dong-chatbox" onclick="dongForm()">Đóng</button>
+                </form>
+              </div>
         </div>
     </div>
     </section>

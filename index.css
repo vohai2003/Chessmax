@@ -116,3 +116,86 @@ button{
 .register p a:hover{
     text-decoration: underline;
 }
+/*VAO ROOM*/
+.room {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    right: 15px;
+    border: 3px solid #000000;
+    border-radius: 20px;
+    z-index: 9;
+
+    
+  }
+  
+  /* Thêm style cho form */
+  .form-container {
+    max-width: 500px;
+    padding: 30px;
+    border: 2px solid rgba(255,255,255,0.5) !important ;
+    border-radius: 20px;
+    backdrop-filter: blur(15px);
+    background-color: white;
+  }
+  
+  
+  /* Sthiết lập style cho nút trong form*/
+  .form-container .btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 16px 20px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom:10px;
+    opacity: 0.8;
+  }
+  
+  /* Thiết lập màu nền cho nút đóng chatbox */
+  .form-container .nut-dong-chatbox {
+    background-color: red;
+  }
+  
+  /* Thêm hiệu ứng hover cho nút*/
+  .form-container .btn:hover, .nut-mo-chatbox:hover {
+    opacity: 1;
+  }
+  .inputboxs{
+    position: relative;
+    margin: 30px 0;
+    width: 310px;
+    border-bottom: 2px solid white;
+}
+.inputboxs label{
+    position: absolute;
+    top: 50%;
+    left: 5px;
+    transform: translateY(-50%);
+    color: white;
+    font-size: lem;
+    pointer-events: none;
+    transition: .5s;
+}
+input:focus ~ label,
+input:valid ~ label{
+    top:-5px;
+}
+
+.inputboxs input{
+    width: 100%;
+    height: 50px;
+    background: transparent;
+    outline: none;
+    border: none;
+    font-size: lem;
+    padding: 0 35px 0 5px;
+    color: rgb(10, 10, 10);
+}
+.inputboxs ion-icon{
+    position: absolute;
+    right: 8px;
+    color: rgb(10, 10, 10);
+    font-size: 1.2em;
+    top: 20px;
+}
