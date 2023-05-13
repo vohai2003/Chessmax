@@ -105,11 +105,21 @@ form {
 textarea {
   width: 100%;
   padding: 15px;
-  margin: 406px 0 0px 0 !important;
+  margin: 0px 0 0px 0 !important;
   border: none;
   background: #fffdfd;
-  resize: none;
-  min-height: 200px;
+  resize: none !important;
+  min-height: 2em;
   border: 2px solid rgba(255,255,255,0.5) !important ;
   border-radius: 20px;
+}
+.chatlog {
+  border-top: 2px solid white !important;
+  overflow-x:auto; 
+  overflow-y:scroll;
+  height:25em;
+  color: white
+}
+.status-n-chatlog {
+  height: auto
 }
