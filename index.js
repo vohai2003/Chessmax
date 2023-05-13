@@ -31,6 +31,22 @@ class ChessRoom extends colyseus.Room {
         this.onMessage("ended",(client,message)=>{
             this.broadcast("ended",message)
         })
+        this.onMessage("chat",(client,message)=>{
+            if (this.players.find(element => element === client)) {
+                this.players.forEach((value)=>{
+                    if (value!==client) {
+                        value.send("chat",message)
+                    }
+                })
+            }
+            else {
+                this.spectators.forEach((value)=>{
+                    if (value!==client) {
+                        value.send("chat",message)
+                    }
+                })
+            }
+        })
     }
     onJoin(client,options,auth) {
         var amIspectator = true;
@@ -45,7 +61,7 @@ class ChessRoom extends colyseus.Room {
             this.players[selectedside] = client;
             amIspectator = false;
         }
-        if (number_of_players == 1) {
+        else if (number_of_players == 1) {
             var selectedside = this.players.findIndex((player)=>{
                 return player === null;
             });
@@ -53,6 +69,9 @@ class ChessRoom extends colyseus.Room {
             amIspectator = false;
             this.players[selectedside] = client;
             started = true;
+        }
+        else {
+            this.spectators.push(client)
         }
         client.send("welcome",{
             spectator: amIspectator,
@@ -72,7 +91,13 @@ class ChessRoom extends colyseus.Room {
         await this.allowReconnection(client, 30);
         }
         catch(e) {
-            this.broadcast("ended",{reason: "disconnection"})
+            if (this.players.find(element => element === client)) {
+                this.broadcast("ended",{reason: "disconnection"})
+            }
+            else {
+                
+            }
+            
         }
     }
     onDispose() {
