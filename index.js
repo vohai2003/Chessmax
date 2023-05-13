@@ -7,6 +7,15 @@ const app = express();
 app.use(express.json());
 const { randomInt } = require('crypto');
 const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs));
+var roomIdCount = 0;
+function generateRoomId() {
+    var id = (roomIdCount).toString(16).padStart(9,'0');
+    roomIdCount = roomIdCount + 1;
+    if (roomIdCount > 68719476735) {
+        roomIdCount = 0
+    }
+    return id
+}
 class ChessRoom extends colyseus.Room {
     maxClients = 99;
     players = [null,null];
@@ -104,8 +113,14 @@ class ChessRoom extends colyseus.Room {
 
     }
 }
+class Randomize extends colyseus.Room {
+    onCreate(options) {
+        this.roomId = generateRoomId()
+    }
+}
 const gameServer = new colyseus.Server({
     server:http.createServer(app)
 });
 gameServer.define("public_hall",ChessRoom);
+gameServer.define("randomize",Randomize);
 gameServer.listen(port);
